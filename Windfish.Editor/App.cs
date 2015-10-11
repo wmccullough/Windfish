@@ -174,8 +174,8 @@ namespace Windfish.Editor
                 }
             }
 
-            _secondaryTile.Draw(spriteBatch, new Vector2(15, 15));
-            _primaryTile.Draw(spriteBatch, new Vector2(5, 5));
+            _secondaryTile.Draw(spriteBatch, new Vector2(15, 15), new Color(255, 255, 255, 150));
+            _primaryTile.Draw(spriteBatch, new Vector2(5, 5), new Color(255, 255, 255, 160));
 
             if (MapViewport.Bounds.Contains(_mouse.Position)) {
                 _cursorMapPosition = new Vector2(_mouse.Position.X / 32, _mouse.Position.Y / 32);

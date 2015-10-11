@@ -90,5 +90,10 @@ namespace Windfish.Core
 
             CurrentScreen.Draw(spriteBatch);
         }
+
+        public void DrawWorld(SpriteBatch spriteBatch)
+        {
+            
+        }
     }
 }
