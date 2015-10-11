@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Windfish.Core
 {
-    public class Tile
+    public class Tile : ICloneable
     {
         public Tile()
         {
@@ -23,6 +23,17 @@ namespace Windfish.Core
             TileWidth = tileWidth;
             TileHeight = tileHeight;
             TextureName = textureName;
+        }
+
+        public Tile(Vector3 localPosition, Vector3 worldPosition, Vector2 texturePosition, int tileWidth, int tileHeight, string textureName, Texture2D texture)
+        {
+            LocalPosition = localPosition;
+            WorldPosition = worldPosition;
+            TexturePosition = texturePosition;
+            TileWidth = tileWidth;
+            TileHeight = tileHeight;
+            TextureName = textureName;
+            _texture = texture;
         }
 
         public int TileWidth { get; set; }
@@ -50,6 +61,7 @@ namespace Windfish.Core
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            //TODO: Use overload chain
             if (_texture == null) return;
 
             spriteBatch.Draw(_texture,
@@ -59,11 +71,21 @@ namespace Windfish.Core
 
         public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
+            Draw(spriteBatch, position, Color.White);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Color color)
+        {
             if (_texture == null) return;
 
             spriteBatch.Draw(_texture,
                 new Rectangle(position.X.ToInt32(), position.Y.ToInt32(), TileWidth, TileHeight),
-                new Rectangle(TexturePosition.X.ToInt32(), TexturePosition.Y.ToInt32(), TileWidth, TileHeight), Color.White);
+                new Rectangle(TexturePosition.X.ToInt32(), TexturePosition.Y.ToInt32(), TileWidth, TileHeight), color);
+        }
+
+        public object Clone()
+        {
+            return new Tile(LocalPosition, WorldPosition, TexturePosition, TileWidth, TileHeight, TextureName, _texture);
         }
     }
 }

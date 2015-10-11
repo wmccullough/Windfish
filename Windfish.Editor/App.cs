@@ -20,9 +20,11 @@ namespace Windfish.Editor
         KeyboardState _lastKeyboardState;
         Tileset _tileset;
         public Viewport TilesViewport = new Viewport(160, 0, 384, 400);
-        public Viewport MapViewport = new Viewport(0, 0, 160, 128);
+        public Viewport MapViewport = new Viewport(0, 0, 320, 256);
         Tile _primaryTile;
         Tile _secondaryTile;
+        MouseState _mouse;
+        Vector2 _cursorMapPosition;
 
         public App() : base()
         {
@@ -87,7 +89,7 @@ namespace Windfish.Editor
         protected override void Update(GameTime gameTime)
         {
             _keyboardState = Keyboard.GetState();
-            MouseState mouse = Mouse.GetState();
+            _mouse = Mouse.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -108,6 +110,22 @@ namespace Windfish.Editor
             if (_keyboardState.IsKeyDown(Keys.Right) && !_lastKeyboardState.IsKeyDown(Keys.Right)) {
                 _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X + 1, _world.CurrentScreenPosition.Y));
             }
+
+            if (MapViewport.Bounds.Contains(_mouse.Position)) {
+                if (_mouse.LeftButton == ButtonState.Pressed) {
+                    Tile tile = (Tile)_primaryTile.Clone();
+                    tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
+                    tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
+                    _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
+                }
+                if (_mouse.RightButton == ButtonState.Pressed) {
+                    Tile tile = (Tile)_secondaryTile.Clone();
+                    tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
+                    tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
+                    _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
+                }
+            }
+
             _lastKeyboardState = _keyboardState;
 
             base.Update(gameTime);
@@ -141,7 +159,11 @@ namespace Windfish.Editor
             _secondaryTile.Draw(spriteBatch, new Vector2(15, 15));
             _primaryTile.Draw(spriteBatch, new Vector2(5, 5));
 
-            _primaryTile.Draw(spriteBatch, new Vector2(Mouse.GetState().Position.X / 2, Mouse.GetState().Position.Y / 2));
+            if (MapViewport.Bounds.Contains(_mouse.Position)) {
+                _cursorMapPosition = new Vector2(_mouse.Position.X / 32, _mouse.Position.Y / 32);
+
+                _primaryTile.Draw(spriteBatch, _cursorMapPosition * 16, new Color(255, 255, 255, 150));
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
