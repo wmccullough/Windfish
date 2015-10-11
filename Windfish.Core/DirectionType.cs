@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Windfish
+namespace Windfish.Core
 {
-    public enum InputType
+    public enum DirectionType
     {
-        None,
         Up,
         Down,
         Left,

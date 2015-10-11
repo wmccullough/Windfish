@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public class Sprite : Component
     {

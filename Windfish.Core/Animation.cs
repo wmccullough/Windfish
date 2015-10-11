@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public class Animation : Component
     {

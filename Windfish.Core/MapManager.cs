@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public class MapManager
     {
@@ -22,11 +22,10 @@ namespace Windfish
         {
             var tiles = new List<Tile>();
 
-            XmlSerializationUtil.LoadXML(out tiles, string.Format("Content\\{0}_map.xml", Name));
+            XmlSerializationUtil.LoadXML<List<Tile>>(out tiles, string.Format("Content\\{0}_map.xml", Name));
 
             if (tiles != null) {
                 _tiles = tiles;
-                _tiles = _tiles.OrderBy(o => o.Position.Z).ToList();
 
                 foreach (Tile tile in _tiles) {
                     tile.LoadContent(contentManager);

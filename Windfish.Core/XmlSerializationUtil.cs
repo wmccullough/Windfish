@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public static class XmlSerializationUtil
     {

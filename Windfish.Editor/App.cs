@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.IO;
 using Windfish.Core;
 
-namespace Windfish
+namespace Windfish.Editor
 {
     /// <summary>
     /// This is the main type for your game
@@ -12,20 +13,17 @@ namespace Windfish
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        public static Color DefaultBackground = new Color(196, 207, 161);
-        GameObject _player = new GameObject();
-        private InputManager _inputManager;
-        private MapManager _mapManager;
+        World _world;
+        KeyboardState _keyboardState;
+        KeyboardState _lastKeyboardState;
 
         public App() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-            graphics.PreferredBackBufferHeight = 240;
-            graphics.PreferredBackBufferWidth = 320;
-            _inputManager = new InputManager();
-            _mapManager = new MapManager("test");
+            graphics.PreferredBackBufferHeight = 768;
+            graphics.PreferredBackBufferWidth = 1024;
+            _world = new World();
         }
 
         /// <summary>
@@ -36,7 +34,12 @@ namespace Windfish
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            //if (!File.Exists("World.map")) {
+
+            //}
+            _world = World.Load("World.map");
+            //_world.New();
+            //_world.Save("World.map");
 
             base.Initialize();
         }
@@ -49,10 +52,11 @@ namespace Windfish
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            _player.AddComponent(new Sprite(Content.Load<Texture2D>("Textures/LinkSpritesheet"), 16, 16, new Vector2(0, 0)));
-            _player.AddComponent(new PlayerInput());
-            _player.AddComponent(new Animation(16, 16));
-            _mapManager.LoadContent(Content);
+            Tileset tileset = new Tileset("Textures/overworld");
+            tileset.LoadContent(Content);
+
+            _world.LoadContent(Content);
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -72,13 +76,28 @@ namespace Windfish
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            _keyboardState = Keyboard.GetState();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _inputManager.Update(gameTime);
-            _player.Update(gameTime);
-            _mapManager.Update(gameTime);
-            // TODO: Add your update logic here
+            Window.Title = string.Format("Windfish Editor (X: {0} Y: {1})", _world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y);
+
+            _world.Update(gameTime);
+
+            if (_keyboardState.IsKeyDown(Keys.Up) && !_lastKeyboardState.IsKeyDown(Keys.Up)) {
+                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y - 1));
+            }
+            if (_keyboardState.IsKeyDown(Keys.Down) && !_lastKeyboardState.IsKeyDown(Keys.Down)) {
+                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y + 1));
+            }
+            if (_keyboardState.IsKeyDown(Keys.Left) && !_lastKeyboardState.IsKeyDown(Keys.Left)) {
+                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X - 1, _world.CurrentScreenPosition.Y));
+            }
+            if (_keyboardState.IsKeyDown(Keys.Right) && !_lastKeyboardState.IsKeyDown(Keys.Right)) {
+                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X + 1, _world.CurrentScreenPosition.Y));
+            }
+            _lastKeyboardState = _keyboardState;
 
             base.Update(gameTime);
         }
@@ -89,16 +108,13 @@ namespace Windfish
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(DefaultBackground);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Matrix.CreateScale(2f));
 
-            _mapManager.Draw(spriteBatch);
-
-            _player.Draw(spriteBatch);
+            _world.Draw(spriteBatch);
 
             spriteBatch.End();
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

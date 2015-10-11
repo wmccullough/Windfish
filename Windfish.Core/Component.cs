@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public abstract class Component
     {

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Windfish
+namespace Windfish.Core
 {
-    public enum DirectionType
+    public enum StateType
     {
-        Up,
-        Down,
-        Left,
-        Right
+        Standing,
+        Walking
     }
 }

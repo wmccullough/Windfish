@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Windfish
+namespace Windfish.Core
 {
     public class InputEventArgs : EventArgs
     {
