@@ -56,5 +56,14 @@ namespace Windfish.Core
                 new Rectangle(LocalPosition.X.ToInt32() * TileWidth, LocalPosition.Y.ToInt32() * TileHeight, TileWidth, TileHeight),
                 new Rectangle(TexturePosition.X.ToInt32(), TexturePosition.Y.ToInt32(), TileWidth, TileHeight), Color.White);
         }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
+        {
+            if (_texture == null) return;
+
+            spriteBatch.Draw(_texture,
+                new Rectangle(position.X.ToInt32(), position.Y.ToInt32(), TileWidth, TileHeight),
+                new Rectangle(TexturePosition.X.ToInt32(), TexturePosition.Y.ToInt32(), TileWidth, TileHeight), Color.White);
+        }
     }
 }

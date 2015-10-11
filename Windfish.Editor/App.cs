@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.IO;
+using System.Linq;
 using Windfish.Core;
 
 namespace Windfish.Editor
@@ -16,14 +18,20 @@ namespace Windfish.Editor
         World _world;
         KeyboardState _keyboardState;
         KeyboardState _lastKeyboardState;
+        Tileset _tileset;
+        public Viewport TilesViewport = new Viewport(160, 0, 384, 400);
+        public Viewport MapViewport = new Viewport(0, 0, 160, 128);
+        Tile _primaryTile;
+        Tile _secondaryTile;
 
         public App() : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 768;
-            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 800;
+            graphics.PreferredBackBufferWidth = 1088;
             _world = new World();
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -52,8 +60,10 @@ namespace Windfish.Editor
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            Tileset tileset = new Tileset("Textures/overworld");
-            tileset.LoadContent(Content);
+            _tileset = new Tileset("Textures/overworld");
+            _tileset.LoadContent(Content);
+            _primaryTile = _tileset.Tiles[0];
+            _secondaryTile = _tileset.Tiles[1];
 
             _world.LoadContent(Content);
 
@@ -77,6 +87,7 @@ namespace Windfish.Editor
         protected override void Update(GameTime gameTime)
         {
             _keyboardState = Keyboard.GetState();
+            MouseState mouse = Mouse.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -114,6 +125,23 @@ namespace Windfish.Editor
 
             _world.Draw(spriteBatch);
 
+            int counter = 0;
+
+            foreach (int y in Enumerable.Range(0, TilesViewport.Height / 16)) {
+                foreach (int x in Enumerable.Range(0, TilesViewport.Width / 16)) {
+                    try {
+                        _tileset.Tiles[counter].Draw(spriteBatch, new Vector2(TilesViewport.X + (x * 16), y * 16));
+                        counter++;
+                    } catch (Exception ex) {
+
+                    }
+                }
+            }
+
+            _secondaryTile.Draw(spriteBatch, new Vector2(15, 15));
+            _primaryTile.Draw(spriteBatch, new Vector2(5, 5));
+
+            _primaryTile.Draw(spriteBatch, new Vector2(Mouse.GetState().Position.X / 2, Mouse.GetState().Position.Y / 2));
             spriteBatch.End();
 
             base.Draw(gameTime);

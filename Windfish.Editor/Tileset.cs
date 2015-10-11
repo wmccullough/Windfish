@@ -32,6 +32,7 @@ namespace Windfish.Editor
             foreach (int y in Enumerable.Range(0, tileHeight)) {
                 foreach (int x in Enumerable.Range(0, tileWidth)) {
                     Tiles[counter] = new Tile(Vector3.Zero, Vector3.Zero, new Vector2(x * 16, y * 16), 16, 16, TextureName);
+                    Tiles[counter].LoadContent(contentManager);
                     counter++;
                 }
             }
