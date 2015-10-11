@@ -19,12 +19,13 @@ namespace Windfish.Editor
         KeyboardState _keyboardState;
         KeyboardState _lastKeyboardState;
         Tileset _tileset;
-        public Viewport TilesViewport = new Viewport(160, 0, 384, 400);
+        public Viewport TilesViewport = new Viewport(320, 0, 768, 800);
         public Viewport MapViewport = new Viewport(0, 0, 320, 256);
         Tile _primaryTile;
         Tile _secondaryTile;
         MouseState _mouse;
         Vector2 _cursorMapPosition;
+        Vector2 _tilesetPosition;
 
         public App() : base()
         {
@@ -125,6 +126,23 @@ namespace Windfish.Editor
                     _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
                 }
             }
+            if (TilesViewport.Bounds.Contains(_mouse.Position)) {
+                _cursorMapPosition = new Vector2((_mouse.Position.X - TilesViewport.Bounds.X) / 32, _mouse.Position.Y / 32);
+                int rowLength = TilesViewport.Width / 32;
+
+                if (_mouse.LeftButton == ButtonState.Pressed) {
+                    int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y );
+                    if (index < _tileset.Tiles.Length) {
+                        _primaryTile = _tileset.Tiles[index];
+                    }
+                }
+                if (_mouse.RightButton == ButtonState.Pressed) {
+                    int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y);
+                    if (index < _tileset.Tiles.Length) {
+                        _secondaryTile = _tileset.Tiles[index];
+                    }
+                }
+            }
 
             _lastKeyboardState = _keyboardState;
 
@@ -145,10 +163,10 @@ namespace Windfish.Editor
 
             int counter = 0;
 
-            foreach (int y in Enumerable.Range(0, TilesViewport.Height / 16)) {
-                foreach (int x in Enumerable.Range(0, TilesViewport.Width / 16)) {
+            foreach (int y in Enumerable.Range(0, TilesViewport.Height / 32)) {
+                foreach (int x in Enumerable.Range(0, TilesViewport.Width / 32)) {
                     try {
-                        _tileset.Tiles[counter].Draw(spriteBatch, new Vector2(TilesViewport.X + (x * 16), y * 16));
+                        _tileset.Tiles[counter].Draw(spriteBatch, new Vector2(160 + (x * 16), y * 16));
                         counter++;
                     } catch (Exception ex) {
 
