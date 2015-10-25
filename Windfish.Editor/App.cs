@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Windfish.Core;
@@ -19,7 +20,7 @@ namespace Windfish.Editor
         KeyboardState _keyboardState;
         KeyboardState _lastKeyboardState;
         Tileset _tileset;
-        public Viewport TilesViewport = new Viewport(320, 0, 768, 800);
+        public Viewport TilesViewport = new Viewport(320, 0, 768, 768);
         public Viewport MapViewport = new Viewport(0, 0, 320, 256);
         Tile _primaryTile;
         Tile _secondaryTile;
@@ -89,64 +90,68 @@ namespace Windfish.Editor
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            _keyboardState = Keyboard.GetState();
-            _mouse = Mouse.GetState();
+            if (this.IsActive) {
+                _keyboardState = Keyboard.GetState();
+                _mouse = Mouse.GetState();
 
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+                Window.Title = string.Format("Windfish Editor (X: {0} Y: {1})", _world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y);
 
-            Window.Title = string.Format("Windfish Editor (X: {0} Y: {1})", _world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y);
+                _world.Update(gameTime);
 
-            _world.Update(gameTime);
-
-            if (_keyboardState.IsKeyDown(Keys.Up) && !_lastKeyboardState.IsKeyDown(Keys.Up)) {
-                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y - 1));
-            }
-            if (_keyboardState.IsKeyDown(Keys.Down) && !_lastKeyboardState.IsKeyDown(Keys.Down)) {
-                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y + 1));
-            }
-            if (_keyboardState.IsKeyDown(Keys.Left) && !_lastKeyboardState.IsKeyDown(Keys.Left)) {
-                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X - 1, _world.CurrentScreenPosition.Y));
-            }
-            if (_keyboardState.IsKeyDown(Keys.Right) && !_lastKeyboardState.IsKeyDown(Keys.Right)) {
-                _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X + 1, _world.CurrentScreenPosition.Y));
-            }
-
-            if (MapViewport.Bounds.Contains(_mouse.Position)) {
-                if (_mouse.LeftButton == ButtonState.Pressed) {
-                    Tile tile = (Tile)_primaryTile.Clone();
-                    tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
-                    tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
-                    _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
+                if (_keyboardState.IsKeyDown(Keys.Up) && !_lastKeyboardState.IsKeyDown(Keys.Up)) {
+                    _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y - 1));
                 }
-                if (_mouse.RightButton == ButtonState.Pressed) {
-                    Tile tile = (Tile)_secondaryTile.Clone();
-                    tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
-                    tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
-                    _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
+                if (_keyboardState.IsKeyDown(Keys.Down) && !_lastKeyboardState.IsKeyDown(Keys.Down)) {
+                    _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X, _world.CurrentScreenPosition.Y + 1));
                 }
-            }
-            if (TilesViewport.Bounds.Contains(_mouse.Position)) {
-                _cursorMapPosition = new Vector2((_mouse.Position.X - TilesViewport.Bounds.X) / 32, _mouse.Position.Y / 32);
-                int rowLength = TilesViewport.Width / 32;
+                if (_keyboardState.IsKeyDown(Keys.Left) && !_lastKeyboardState.IsKeyDown(Keys.Left)) {
+                    _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X - 1, _world.CurrentScreenPosition.Y));
+                }
+                if (_keyboardState.IsKeyDown(Keys.Right) && !_lastKeyboardState.IsKeyDown(Keys.Right)) {
+                    _world.MoveToScreen(new Vector2(_world.CurrentScreenPosition.X + 1, _world.CurrentScreenPosition.Y));
+                }
+                if (_keyboardState.IsKeyDown(Keys.F2) && !_lastKeyboardState.IsKeyDown(Keys.F2)) {
+                    _world.Save("World.map");
+                }
 
-                if (_mouse.LeftButton == ButtonState.Pressed) {
-                    int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y );
-                    if (index < _tileset.Tiles.Length) {
-                        _primaryTile = _tileset.Tiles[index];
+                if (MapViewport.Bounds.Contains(_mouse.Position)) {
+                    if (_mouse.LeftButton == ButtonState.Pressed) {
+                        Tile tile = (Tile)_primaryTile.Clone();
+                        tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
+                        tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
+                        _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
+                    }
+                    if (_mouse.RightButton == ButtonState.Pressed) {
+                        Tile tile = (Tile)_secondaryTile.Clone();
+                        tile.LocalPosition = new Vector3(_cursorMapPosition.X, _cursorMapPosition.Y, 0);
+                        tile.WorldPosition = new Vector3(_cursorMapPosition.X + (_world.CurrentScreenPosition.X * Screen.ScreenWidth), _cursorMapPosition.Y + (_world.CurrentScreenPosition.Y * Screen.ScreenHeight), 0);
+                        _world.CurrentScreen.SetTile(_cursorMapPosition.X.ToInt32(), _cursorMapPosition.Y.ToInt32(), tile);
                     }
                 }
-                if (_mouse.RightButton == ButtonState.Pressed) {
-                    int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y);
-                    if (index < _tileset.Tiles.Length) {
-                        _secondaryTile = _tileset.Tiles[index];
+                if (TilesViewport.Bounds.Contains(_mouse.Position)) {
+                    _cursorMapPosition = new Vector2((_mouse.Position.X - TilesViewport.Bounds.X) / 32, _mouse.Position.Y / 32);
+                    int rowLength = TilesViewport.Width / 32;
+
+                    if (_mouse.LeftButton == ButtonState.Pressed) {
+                        int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y);
+                        if (index < _tileset.Tiles.Length) {
+                            _primaryTile = _tileset.Tiles[index];
+                        }
+                    }
+                    if (_mouse.RightButton == ButtonState.Pressed) {
+                        int index = (int)(_cursorMapPosition.X + rowLength * _cursorMapPosition.Y);
+                        if (index < _tileset.Tiles.Length) {
+                            _secondaryTile = _tileset.Tiles[index];
+                        }
                     }
                 }
+
+                _lastKeyboardState = _keyboardState;
+
+                base.Update(gameTime);
+            } else {
+                Debug.Print("Not Active");
             }
-
-            _lastKeyboardState = _keyboardState;
-
-            base.Update(gameTime);
         }
 
         /// <summary>
@@ -174,8 +179,8 @@ namespace Windfish.Editor
                 }
             }
 
-            _secondaryTile.Draw(spriteBatch, new Vector2(15, 15), new Color(255, 255, 255, 150));
-            _primaryTile.Draw(spriteBatch, new Vector2(5, 5), new Color(255, 255, 255, 160));
+            //_secondaryTile.Draw(spriteBatch, new Vector2(15, 15), new Color(255, 255, 255, 150));
+            //_primaryTile.Draw(spriteBatch, new Vector2(5, 5), new Color(255, 255, 255, 160));
 
             if (MapViewport.Bounds.Contains(_mouse.Position)) {
                 _cursorMapPosition = new Vector2(_mouse.Position.X / 32, _mouse.Position.Y / 32);

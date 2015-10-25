@@ -1,0 +1,32 @@
+{
+  "GameObject": [
+    {
+      "Name": "BlueRupee",
+      "TextureName": "Textures/Overworld",
+      "TexturePositionX": 96,
+      "TexturePositionY": 0,
+      "DestroyedBy": [ "" ],
+      "Collectable": true,
+      "MaxAmount" :  999,
+      "CanBePickedUp": false,
+      "PickupItemConditions" : [""],
+      "DestroyedAnimation": "",
+      "Disappears" :  true,
+      "DisappearsAfterSeconds":  30
+    },
+    {
+      "Name": "Bush1",
+      "TextureName": "Textures/Overworld",
+      "TexturePositionX": 96,
+      "TexturePositionY": 0,
+      "DestroyedBy": [ "sword" ],
+      "Collectable": false,
+      "MaxAmount" :  0,
+      "CanBePickedUp": true,
+      "PickupItemConditions" : ["MagicBracelet"],
+      "DestroyedAnimation": "FallingLeaves1",
+      "Disappears" :  true,
+      "DisappearsAfterSeconds":  30
+    }
+  ]
+}

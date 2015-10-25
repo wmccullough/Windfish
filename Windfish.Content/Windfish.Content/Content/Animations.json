@@ -1,0 +1,34 @@
+{
+  "Animations": [
+    {
+      "Name": "Flowers1",
+      "Loop":  true,
+      "Frames": [
+        {
+          "X": 0,
+          "Y": 0,
+          "Width": 16,
+          "Height": 16
+        },
+        {
+          "X": 16,
+          "Y": 0,
+          "Width": 16,
+          "Height": 16
+        },
+        {
+          "X": 32,
+          "Y": 0,
+          "Width": 16,
+          "Height": 16
+        },
+        {
+          "X": 48,
+          "Y": 0,
+          "Width": 16,
+          "Height": 16
+        }
+      ]
+    }
+  ]
+}

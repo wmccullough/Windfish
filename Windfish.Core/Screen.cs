@@ -36,7 +36,7 @@ namespace Windfish.Core
                     Tiles[x, y] = new Tile(
                         new Vector3(x, y, 0), 
                         new Vector3(x + (WorldPosition.X + ScreenWidth), y + (WorldPosition.Y + ScreenHeight), 0),
-                        new Vector2(320, 336), 16, 16, "Textures/overworld");
+                        new Vector2(0, 0), 16, 16, "Textures/overworld");
                 }
             }
         }

@@ -93,7 +93,11 @@ namespace Windfish.Core
 
         public void DrawWorld(SpriteBatch spriteBatch)
         {
-            
+            foreach (int y in Enumerable.Range(0, 16)) {
+                foreach (int x in Enumerable.Range(0, 16)) {
+                    Screens[x, y].Draw(spriteBatch);
+                }
+            }
         }
     }
 }
